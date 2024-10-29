@@ -3,21 +3,26 @@ from check_word import check_word
 
 class Table:
     def __init__(self):
-        self.prefixes = ['']
+        self.prefixes = ['', 'L']
         self.suffixes = ['']
         self.set_suffixes = set()
-        self.extended_prefixes = dict()
+        self.extended_prefixes = {'R': ''}  # dict, key - prefixes, values - empty strings
+        # Needed to quickly find prefix in set of prefixes while maintaining order
         self.eq_classes = set()
         self.string_values = dict()  # table, key - prefix, value - string
-        self.pointer = 0  # point to prefix that has not been extended with L and R yet
+        self.pointer = 1  # point to prefix that has not been extended with L and R yet
 
         self.string_values[''] = self.check_word('ε')
+        self.string_values['L'] = self.check_word('L')
+        self.string_values['R'] = self.check_word('R')
+        self.eq_classes.add(self.string_values[''])
+        self.eq_classes.add(self.string_values['L'])
+        self.eq_classes.add(self.string_values['R'])
 
     def get_table(self):
         main_prefixes = ' '.join(self.prefixes)
         main_prefixes = 'ε' + main_prefixes
         non_main_prefixes = ' '.join(self.extended_prefixes.keys())
-        non_main_prefixes = 'ε' + non_main_prefixes
         suffixes = ' '.join(self.suffixes)
         suffixes = 'ε' + suffixes
         table = ''
@@ -45,7 +50,7 @@ class Table:
         for i in range(len(word)):
             suffix = word[i:]
             if suffix in self.set_suffixes:
-                break
+                break  # no need to continue
             self.suffixes.append(suffix)
             self.set_suffixes.add(suffix)
 
